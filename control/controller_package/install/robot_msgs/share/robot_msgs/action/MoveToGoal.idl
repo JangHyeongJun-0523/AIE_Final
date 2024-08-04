@@ -1,0 +1,34 @@
+// generated from rosidl_adapter/resource/action.idl.em
+// with input from robot_msgs/action/MoveToGoal.action
+// generated code does not contain a copyright notice
+
+
+module robot_msgs {
+  module action {
+    @verbatim (language="comment", text=
+      "Request")
+    struct MoveToGoal_Goal {
+      sequence<double> x;
+
+      sequence<double> y;
+
+      sequence<double> theta;
+    };
+    @verbatim (language="comment", text=
+      "Result")
+    struct MoveToGoal_Result {
+      string result_status;
+
+      double x;
+
+      double y;
+
+      double theta;
+    };
+    @verbatim (language="comment", text=
+      "Feedback")
+    struct MoveToGoal_Feedback {
+      string feedback_status;
+    };
+  };
+};

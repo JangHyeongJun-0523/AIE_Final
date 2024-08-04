@@ -1,0 +1,20 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from robot_msgs/msg/ObjectPose.msg
+// generated code does not contain a copyright notice
+
+
+module robot_msgs {
+  module msg {
+    struct ObjectPose {
+      int8 detector_id;
+
+      boolean detected;
+
+      sequence<string> labels;
+
+      sequence<float> ranges;
+
+      sequence<float> angles;
+    };
+  };
+};
