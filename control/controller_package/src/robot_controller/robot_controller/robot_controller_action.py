@@ -72,11 +72,14 @@ class MoveManager(Node):
         return euler
     
     def object_detection(self, object_info):
-        if object_info.detected is True and object_info.labels and object_info.ranges and object_info.angles:
-            self.ac_server.is_object = object_info.detected
-            self.ac_server.object_labels = object_info.labels
-            self.ac_server.object_ranges = object_info.ranges
-            self.ac_server.object_angles = object_info.angles
+        self.ac_server.is_object = False
+        self.ac_server.object_labels = []
+        self.ac_server.object_ranges = []
+        self.ac_server.object_angles = []
+        self.ac_server.is_object = object_info.detected
+        self.ac_server.object_labels = object_info.labels
+        self.ac_server.object_ranges = object_info.ranges
+        self.ac_server.object_angles = object_info.angles
 
 class MoveActionServer(Node):
     def __init__(self):
@@ -121,6 +124,7 @@ class MoveActionServer(Node):
 
                 angle_error = 1000
                 while abs(angle_error) > 0.3:
+                    ranges = []
                     if self.object_ranges:
                         ranges = self.object_ranges
                     if not ranges:
@@ -172,6 +176,7 @@ class MoveActionServer(Node):
                 self.pid_angular.inegral_and_time_reset()
 
                 while distance > 0.1:
+                    ranges = []
                     if self.object_ranges:
                         ranges = self.object_ranges
                     if not ranges:

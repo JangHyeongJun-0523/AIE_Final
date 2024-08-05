@@ -48,7 +48,7 @@
      </widget>
      <widget class="QLineEdit" name="shelf1_id">
       <property name="text">
-       <string>shelf.1</string>
+       <string/>
       </property>
      </widget>
      <widget class="QLabel" name="s_status1">
@@ -58,7 +58,7 @@
      </widget>
      <widget class="QLineEdit" name="shelf1_status">
       <property name="text">
-       <string>LOADED</string>
+       <string/>
       </property>
      </widget>
     </widget>
@@ -73,7 +73,7 @@
      </widget>
      <widget class="QLineEdit" name="shelf2_id">
       <property name="text">
-       <string>shelf.2</string>
+       <string/>
       </property>
      </widget>
      <widget class="QLabel" name="s_status2">
@@ -83,7 +83,7 @@
      </widget>
      <widget class="QLineEdit" name="shelf2_status">
       <property name="text">
-       <string>LOADED</string>
+       <string/>
       </property>
      </widget>
     </widget>
@@ -98,7 +98,7 @@
      </widget>
      <widget class="QLineEdit" name="shelf3_id">
       <property name="text">
-       <string>shelf.3</string>
+       <string/>
       </property>
      </widget>
      <widget class="QLabel" name="s_status3">
@@ -108,7 +108,7 @@
      </widget>
      <widget class="QLineEdit" name="shelf3_status">
       <property name="text">
-       <string>unloaded</string>
+       <string/>
       </property>
      </widget>
     </widget>
@@ -123,7 +123,7 @@
      </widget>
      <widget class="QLineEdit" name="shelf4_id">
       <property name="text">
-       <string>shelf.4</string>
+       <string/>
       </property>
      </widget>
      <widget class="QLabel" name="s_status4">
@@ -133,7 +133,7 @@
      </widget>
      <widget class="QLineEdit" name="shelf4_status">
       <property name="text">
-       <string>LOADED</string>
+       <string/>
       </property>
      </widget>
     </widget>
@@ -148,7 +148,7 @@
      </widget>
      <widget class="QLineEdit" name="shelf5_id">
       <property name="text">
-       <string>shelf.5</string>
+       <string/>
       </property>
      </widget>
      <widget class="QLabel" name="s_status5">
@@ -158,7 +158,7 @@
      </widget>
      <widget class="QLineEdit" name="shelf5_status">
       <property name="text">
-       <string>LOADED</string>
+       <string/>
       </property>
      </widget>
     </widget>
@@ -173,7 +173,7 @@
      </widget>
      <widget class="QLineEdit" name="shelf6_id">
       <property name="text">
-       <string>shelf.6</string>
+       <string/>
       </property>
      </widget>
      <widget class="QLabel" name="s_status6">
@@ -183,7 +183,7 @@
      </widget>
      <widget class="QLineEdit" name="shelf6_status">
       <property name="text">
-       <string>unloaded</string>
+       <string/>
       </property>
      </widget>
     </widget>
@@ -746,7 +746,7 @@
      </widget>
      <widget class="QLineEdit" name="robot1_id">
       <property name="text">
-       <string>MK.1</string>
+       <string/>
       </property>
      </widget>
      <widget class="QLabel" name="r_status1">
@@ -756,7 +756,7 @@
      </widget>
      <widget class="QLineEdit" name="robot1_status">
       <property name="text">
-       <string>INTAKE</string>
+       <string/>
       </property>
      </widget>
      <widget class="QPushButton" name="select1_button">
@@ -779,7 +779,7 @@
      </widget>
      <widget class="QLineEdit" name="robot2_id">
       <property name="text">
-       <string>MK.2</string>
+       <string/>
       </property>
      </widget>
      <widget class="QLabel" name="r_status2">
@@ -789,7 +789,7 @@
      </widget>
      <widget class="QLineEdit" name="robot2_status">
       <property name="text">
-       <string>CHARGING</string>
+       <string/>
       </property>
      </widget>
      <widget class="QPushButton" name="select2_button">
@@ -809,7 +809,7 @@
      </widget>
      <widget class="QLineEdit" name="robot3_id">
       <property name="text">
-       <string>MK.3</string>
+       <string/>
       </property>
      </widget>
      <widget class="QLabel" name="r_status3">
@@ -819,7 +819,7 @@
      </widget>
      <widget class="QLineEdit" name="robot3_status">
       <property name="text">
-       <string>CHARGING</string>
+       <string/>
       </property>
      </widget>
      <widget class="QPushButton" name="select3_button">
@@ -845,7 +845,7 @@
      </widget>
      <widget class="QLineEdit" name="robot4_status">
       <property name="text">
-       <string>wait</string>
+       <string/>
       </property>
      </widget>
      <widget class="QPushButton" name="pushButton_13">

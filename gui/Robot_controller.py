@@ -16,7 +16,7 @@ from robot_msgs.msg import RobotStatus
 from threading import Thread
 
 shelf_IPs = {
-    "shelf1":'192.168.1.104',
+    "shelf1":'192.168.1.101',
 }
 
 positions = {
@@ -41,29 +41,30 @@ positions = {
     "B5": (0.748402419, 0.5327394950611359, 0),
     "B6": (0.4565105916649657, 0.5327394950611359, 0),
     "B7": (0.228255296, 0.5327394950611359, 0),
-    
 }
 
 
-robot_id = None
-robot_status = None
+# class GoalLauncher(rp.node.Node):
+#     def __init__(self):
+#         super().__init__('goal_launcher')
+#         self.subscription = self.create_subscription(
+#             PoseWithCovarianceStamped,
+#             'amcl_pose',
+#             self.listener_callback,
+#             10)
+#         self.subscription
+#         self.current_pose = None
 
-class RobotManager(Node):
-    def __init__(self):
-        super().__init__('gui_goal_publiser')
-        self.robot_manager = self.create_publisher(GoalPose, '/set_goal', 10)
-        self.robot_status_subscriber = self.create_subscription(RobotStatus,'/robot_status', self.get_robot_status, 10)
+#     def listener_callback(self, msg):
+#         self.current_pose = msg.pose.pose
+#         self.get_logger().info(f'Received pose: {self.current_pose}')
+#         if self.gui:
+#             self.gui.set_pose(self.current_pose)
 
-    def get_robot_status(self, robot_info):
-        global robot_id, robot_status
-        robot_id = robot_info.robot_id
-        robot_status = robot_info.status
-        
+#     def set_gui(self, gui):
+#         self.gui = gui
 
-robot_id = None
-robot_status = None
-
-class RobotManager(Node):
+class GoalLauncher(Node):
     def __init__(self):
         super().__init__('gui_goal_publiser')
         self.goal_publisher = self.create_publisher(GoalPose, '/set_goal', 10)
@@ -72,8 +73,17 @@ class RobotManager(Node):
             '/amcl_pose',
             self.listener_callback,
             10)
+        self.robot1_state_subscription = self.create_subscription(RobotStatus, '/robot1_status', self.robot1_status_callback, 10)
         self.subscription
+        self.robot1_state_subscription
         self.current_pose = None
+
+    def robot1_status_callback(self, msg):
+        print(msg.status)
+        if self.gui:
+            if msg.robot_id == 'Mk.1':
+                self.gui.set_robot1_status(msg.robot_id, msg.status)
+
 
     def listener_callback(self, msg):
         self.current_pose = msg.pose.pose
@@ -84,16 +94,6 @@ class RobotManager(Node):
     def set_gui(self, gui):
         self.gui = gui
         
-        self.robot_manager = self.create_publisher(GoalPose, '/set_goal', 10)
-        self.robot_status_subscriber = self.create_subscription(RobotStatus,'/robot_status', self.get_robot_status, 10)
-
-    def get_robot_status(self, robot_info):
-        global robot_id, robot_status
-        robot_id = robot_info.robot_id
-        robot_status = robot_info.status
-        
-
-    
     def publish_goal(self, key):
         msg = GoalPose()
         msg.move_flag = True
@@ -102,16 +102,16 @@ class RobotManager(Node):
         msg.y = positions[key][1]
         msg.theta = positions[key][2]
 
-        self.robot_manager.publish(msg)
+        self.goal_publisher.publish(msg)
         print(msg)
 
 from_class = uic.loadUiType("./gui/Robot_controller.ui")[0]
 
 class WindowClass(QMainWindow, from_class) :
-    def __init__(self, robot_manager):
+    def __init__(self, goal_publisher):
         super().__init__()
         self.setupUi(self)
-        self.robot_manager = robot_manager
+        self.goal_publisher = goal_publisher
 
         self.Shelf1.clicked.connect(lambda: self.set_goal("Shelf1"))
         self.Shelf2.clicked.connect(lambda: self.set_goal("Shelf2"))
@@ -128,9 +128,27 @@ class WindowClass(QMainWindow, from_class) :
         self.scaled_pixmap = self.pixmap.scaled(self.label.size(), aspectRatioMode=True)
         self.label.setPixmap(self.scaled_pixmap)
 
+        self.shelf1_IR_sensor_value = None
+        self.shelf1_connected = False
+        self.shelf1_connect()
+
+        self.timer = QTimer(self)
+        self.timer.start(1000)
+        #self.timer.timeout.connect(self.timeout)
+
+        self.format = Struct('@iii')
+
+
         self.timer = QTimer()
-        self.timer.timeout.connect(self.update_position)
+        self.timer.timeout.connect(self.update_shelf)
         self.timer.start(100)
+
+        self.current_pose = None
+    
+    def set_robot1_status(self, robot_id, status):
+        self.robot1_id.setText(robot_id)
+        self.robot1_status.setText(status)
+
 
     def update_position(self):
         if self.current_pose:
@@ -154,28 +172,13 @@ class WindowClass(QMainWindow, from_class) :
 
         self.label.setPixmap(updated_pixmap)
 
-        self.timer = QTimer(self)
-        self.timer.start(1000)
-        self.timer.timeout.connect(self.timeout)
-        self.timer.timeout.connect(self.update_robot_status)
-
-        self.format = Struct('@iii')
-
-        self.shelf1_IR_sensor_value = None
-        self.shelf1_connected = False
-        self.shelf1_connect()
-    
-    def update_robot_status(self):
-        self.robot1_id.setText(robot_id)
-        self.robot1_status.setText(robot_status)
-
     def shelf1_connect(self):
         self.shelf1_socket = socket.socket()
         self.shelf1_socket.connect((shelf_IPs["shelf1"], 80))
-        self.shelf1_id.setText('1')
+        self.shelf1_id.setText('shelf 1')
         self.shelf1_connected = True
     
-    def timeout(self):
+    def update_shelf(self):
         self.updateData1(1, 34, 0)
     
     def updateData1(self, machine_id, pin, status):
@@ -194,8 +197,6 @@ class WindowClass(QMainWindow, from_class) :
         
 
     def set_goal(self, key):
-        self.robot_manager.publish_goal(key)
-        
         self.goal_publisher.publish_goal(key)
 
     def __del__(self):
@@ -204,22 +205,22 @@ class WindowClass(QMainWindow, from_class) :
 
 def main(args=None):
     rp.init(args=args)
-    robot_manager = RobotManager()
+    goal_publisher = GoalLauncher()
 
     app = QApplication(sys.argv)
-    myWindows = WindowClass(robot_manager)
+    myWindows = WindowClass(goal_publisher)
     myWindows.show()
 
     goal_publisher.set_gui(myWindows)
 
     def spin():
-        rp.spin(robot_manager)
+        rp.spin(goal_publisher)
 
     spin_thread = Thread(target=spin)
     spin_thread.start()
 
     def shutdown_ros():
-        robot_manager.destroy_node()
+        goal_publisher.destroy_node()
         rp.shutdown()
     
     app.aboutToQuit.connect(shutdown_ros)

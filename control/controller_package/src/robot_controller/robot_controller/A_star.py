@@ -14,7 +14,7 @@ import numpy as np
 
 import os
 import yaml
-#from ament_index_python.packages import get_package_share_directory
+from ament_index_python.packages import get_package_share_directory
 
 class AStarPlanner:
 
@@ -50,8 +50,8 @@ class AStarPlanner:
 
     def load_map(self):
         print("Loading map start!")
-        # map_yaml_file = os.path.join(get_package_share_directory('robot_controller'), 'map', 'map.yaml')
-        map_yaml_file = '/home/hj/ros-repo-1/control/controller_package/src/robot_controller/map/map.yaml'
+        map_yaml_file = os.path.join(get_package_share_directory('task_manager'), 'map', 'map.yaml')
+        # map_yaml_file = '/home/hj/ros-repo-1/control/controller_package/src/robot_controller/map/map.yaml'
         map_yaml_data = yaml.full_load(open(map_yaml_file))
 
         self.map_resolution = map_yaml_data['resolution']    # m / pixel

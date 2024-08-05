@@ -26,7 +26,7 @@ class ObjectDetector(Node):
 
         self.detector_id = 1
         
-        self.model = YOLO('/home/hj/ros-repo-1/control/controller_package/src/final_project_package/model/detector.pt')
+        self.model = YOLO('/home/aa/dev_ws/ros-repo-1/control/controller_package/src/final_project_package/model/detector.pt')
         self.conf = 0.3
 
         self.image_center_x = 160
@@ -144,13 +144,13 @@ class ObjectDetector(Node):
 
 
             if len(class_list):
-                print(class_list)
-                print(distance_list)
-                print(angle_list)
-
                 class_list.append('dummy')
                 distance_list.append(10000.)
                 angle_list.append(10000.)
+
+                print(class_list)
+                print(distance_list)
+                print(angle_list)
 
                 Object = ObjectPose()
                 Object.detector_id = self.detector_id
@@ -164,6 +164,10 @@ class ObjectDetector(Node):
                 class_list.append('dummy')
                 distance_list.append(10000.)
                 angle_list.append(10000.)
+
+                print(class_list)
+                print(distance_list)
+                print(angle_list)
 
                 Object = ObjectPose()
                 Object.detector_id = self.detector_id

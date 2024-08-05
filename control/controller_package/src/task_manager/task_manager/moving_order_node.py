@@ -3,6 +3,7 @@ from rclpy.node import Node
 from rclpy.action import ActionClient
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from robot_msgs.msg import GoalPose
+from robot_msgs.msg import RobotStatus
 from robot_msgs.action import MoveToGoal
 from task_manager.A_star import AStarPlanner
 import math
@@ -14,6 +15,7 @@ class OrderMove(Node):
         
         self.goal_subscriber = self.create_subscription(GoalPose, '/set_goal', self.path_generator, 10)
         self.amcl_subscriber = self.create_subscription(PoseWithCovarianceStamped, '/amcl_pose', self.amcl_callback, 10)
+        self.robot1_status_publisher = self.create_publisher(RobotStatus, '/robot1_status', 10)
         self.action_client = ActionClient(self, MoveToGoal, '/moving_path')
 
         self.position = {'x': 0.0, 'y': 0.0, 'theta': 0.0}
@@ -78,11 +80,23 @@ class OrderMove(Node):
 
     def get_result_callback(self, future):
         result = future.result().result
+
+        msg = RobotStatus()
+        msg.robot_id = 'Mk.1'
+        msg.status = result.result_status
+        self.robot1_status_publisher.publish(msg)
+
         print(result.result_status, result.x, result.y, result.theta)
         self.get_logger().info('Result: {0}'.format(result.result_status))
     
     def feedback_callback(self, feedback_msg):
         feedback = feedback_msg.feedback
+
+        msg = RobotStatus()
+        msg.robot_id = 'Mk.1'
+        msg.status = feedback.feedback_status
+        self.robot1_status_publisher.publish(msg)
+
         self.get_logger().info('Received feedback: {0}'.format(feedback.feedback_status))
 
 
