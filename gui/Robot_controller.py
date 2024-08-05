@@ -70,7 +70,7 @@ class GoalLauncher(Node):
         self.goal_publisher = self.create_publisher(GoalPose, '/set_goal', 10)
         self.subscription = self.create_subscription(
             PoseWithCovarianceStamped,
-            '/amcl_pose',
+            '/amcl_pose1',
             self.listener_callback,
             10)
         self.robot1_state_subscription = self.create_subscription(RobotStatus, '/robot1_status', self.robot1_status_callback, 10)
@@ -94,16 +94,15 @@ class GoalLauncher(Node):
     def set_gui(self, gui):
         self.gui = gui
         
-    def publish_goal(self, key):
+    def publish_goal(self, selected_robot, key):
         msg = GoalPose()
-        msg.move_flag = True
-        msg.rotate_flag = True
+        msg.robot_id = selected_robot
         msg.x = positions[key][0]
         msg.y = positions[key][1]
         msg.theta = positions[key][2]
 
         self.goal_publisher.publish(msg)
-        print(msg)
+        print(msg.robot_id, msg.x, msg.y, msg.theta)
 
 from_class = uic.loadUiType("./gui/Robot_controller.ui")[0]
 
@@ -119,6 +118,11 @@ class WindowClass(QMainWindow, from_class) :
         self.Shelf4.clicked.connect(lambda: self.set_goal("Shelf4"))
         self.Shelf5.clicked.connect(lambda: self.set_goal("Shelf5"))
         self.Shelf6.clicked.connect(lambda: self.set_goal("Shelf6"))
+
+        self.select1_button.clicked.connect(lambda: self.select_robot("Mk.1"))
+        self.select2_button.clicked.connect(lambda: self.select_robot("Mk.2"))
+        self.select3_button.clicked.connect(lambda: self.select_robot("Mk.3"))
+        self.select4_button.clicked.connect(lambda: self.select_robot("Mk.4"))
         
         image_path = './map/test_map.png'
 
@@ -127,6 +131,8 @@ class WindowClass(QMainWindow, from_class) :
 
         self.scaled_pixmap = self.pixmap.scaled(self.label.size(), aspectRatioMode=True)
         self.label.setPixmap(self.scaled_pixmap)
+
+        self.selected_robot = 'Mk.0'
 
         self.shelf1_IR_sensor_value = None
         self.shelf1_connected = False
@@ -144,6 +150,10 @@ class WindowClass(QMainWindow, from_class) :
         self.timer.start(100)
 
         self.current_pose = None
+
+    def select_robot(self, robot_id):
+        self.selected_robot = robot_id
+
     
     def set_robot1_status(self, robot_id, status):
         self.robot1_id.setText(robot_id)
@@ -173,10 +183,13 @@ class WindowClass(QMainWindow, from_class) :
         self.label.setPixmap(updated_pixmap)
 
     def shelf1_connect(self):
-        self.shelf1_socket = socket.socket()
-        self.shelf1_socket.connect((shelf_IPs["shelf1"], 80))
-        self.shelf1_id.setText('shelf 1')
-        self.shelf1_connected = True
+        try:
+            self.shelf1_socket = socket.socket()
+            self.shelf1_socket.connect((shelf_IPs["shelf1"], 80))
+            self.shelf1_id.setText('shelf 1')
+            self.shelf1_connected = True
+        except:
+            self.shelf1_connected = True
     
     def update_shelf(self):
         self.updateData1(1, 34, 0)
@@ -197,7 +210,7 @@ class WindowClass(QMainWindow, from_class) :
         
 
     def set_goal(self, key):
-        self.goal_publisher.publish_goal(key)
+        self.goal_publisher.publish_goal(self.selected_robot, key)
 
     def __del__(self):
         self.shelf1_socket.close()

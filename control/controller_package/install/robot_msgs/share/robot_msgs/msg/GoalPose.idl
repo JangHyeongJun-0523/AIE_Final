@@ -6,9 +6,7 @@
 module robot_msgs {
   module msg {
     struct GoalPose {
-      boolean move_flag;
-
-      boolean rotate_flag;
+      string robot_id;
 
       double x;
 

@@ -37,33 +37,16 @@ void GoalPose_fini_function(void * message_memory)
   typed_message->~GoalPose();
 }
 
-static const ::rosidl_typesupport_introspection_cpp::MessageMember GoalPose_message_member_array[5] = {
+static const ::rosidl_typesupport_introspection_cpp::MessageMember GoalPose_message_member_array[4] = {
   {
-    "move_flag",  // name
-    ::rosidl_typesupport_introspection_cpp::ROS_TYPE_BOOLEAN,  // type
+    "robot_id",  // name
+    ::rosidl_typesupport_introspection_cpp::ROS_TYPE_STRING,  // type
     0,  // upper bound of string
     nullptr,  // members of sub message
     false,  // is array
     0,  // array size
     false,  // is upper bound
-    offsetof(robot_msgs::msg::GoalPose, move_flag),  // bytes offset in struct
-    nullptr,  // default value
-    nullptr,  // size() function pointer
-    nullptr,  // get_const(index) function pointer
-    nullptr,  // get(index) function pointer
-    nullptr,  // fetch(index, &value) function pointer
-    nullptr,  // assign(index, value) function pointer
-    nullptr  // resize(index) function pointer
-  },
-  {
-    "rotate_flag",  // name
-    ::rosidl_typesupport_introspection_cpp::ROS_TYPE_BOOLEAN,  // type
-    0,  // upper bound of string
-    nullptr,  // members of sub message
-    false,  // is array
-    0,  // array size
-    false,  // is upper bound
-    offsetof(robot_msgs::msg::GoalPose, rotate_flag),  // bytes offset in struct
+    offsetof(robot_msgs::msg::GoalPose, robot_id),  // bytes offset in struct
     nullptr,  // default value
     nullptr,  // size() function pointer
     nullptr,  // get_const(index) function pointer
@@ -128,7 +111,7 @@ static const ::rosidl_typesupport_introspection_cpp::MessageMember GoalPose_mess
 static const ::rosidl_typesupport_introspection_cpp::MessageMembers GoalPose_message_members = {
   "robot_msgs::msg",  // message namespace
   "GoalPose",  // message name
-  5,  // number of fields
+  4,  // number of fields
   sizeof(robot_msgs::msg::GoalPose),
   GoalPose_message_member_array,  // message members
   GoalPose_init_function,  // function to initialize message memory (memory has to be allocated)

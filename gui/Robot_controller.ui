@@ -848,7 +848,7 @@
        <string/>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_13">
+     <widget class="QPushButton" name="select4_button">
       <property name="text">
        <string>Select</string>
       </property>

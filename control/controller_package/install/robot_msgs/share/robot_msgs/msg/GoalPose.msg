@@ -1,5 +1,4 @@
-bool move_flag
-bool rotate_flag
+string robot_id
 
 float64 x
 float64 y

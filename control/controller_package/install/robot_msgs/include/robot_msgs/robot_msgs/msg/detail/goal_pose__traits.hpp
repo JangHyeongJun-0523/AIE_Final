@@ -25,17 +25,10 @@ inline void to_flow_style_yaml(
   std::ostream & out)
 {
   out << "{";
-  // member: move_flag
+  // member: robot_id
   {
-    out << "move_flag: ";
-    rosidl_generator_traits::value_to_yaml(msg.move_flag, out);
-    out << ", ";
-  }
-
-  // member: rotate_flag
-  {
-    out << "rotate_flag: ";
-    rosidl_generator_traits::value_to_yaml(msg.rotate_flag, out);
+    out << "robot_id: ";
+    rosidl_generator_traits::value_to_yaml(msg.robot_id, out);
     out << ", ";
   }
 
@@ -65,23 +58,13 @@ inline void to_block_style_yaml(
   const GoalPose & msg,
   std::ostream & out, size_t indentation = 0)
 {
-  // member: move_flag
+  // member: robot_id
   {
     if (indentation > 0) {
       out << std::string(indentation, ' ');
     }
-    out << "move_flag: ";
-    rosidl_generator_traits::value_to_yaml(msg.move_flag, out);
-    out << "\n";
-  }
-
-  // member: rotate_flag
-  {
-    if (indentation > 0) {
-      out << std::string(indentation, ' ');
-    }
-    out << "rotate_flag: ";
-    rosidl_generator_traits::value_to_yaml(msg.rotate_flag, out);
+    out << "robot_id: ";
+    rosidl_generator_traits::value_to_yaml(msg.robot_id, out);
     out << "\n";
   }
 
@@ -162,11 +145,11 @@ inline const char * name<robot_msgs::msg::GoalPose>()
 
 template<>
 struct has_fixed_size<robot_msgs::msg::GoalPose>
-  : std::integral_constant<bool, true> {};
+  : std::integral_constant<bool, false> {};
 
 template<>
 struct has_bounded_size<robot_msgs::msg::GoalPose>
-  : std::integral_constant<bool, true> {};
+  : std::integral_constant<bool, false> {};
 
 template<>
 struct is_message<robot_msgs::msg::GoalPose>

@@ -19,8 +19,8 @@ class ObjectDetector(Node):
         qos_profile = QoSProfile(depth=10)
         qos_profile.reliability = ReliabilityPolicy.BEST_EFFORT
 
-        self.subscription = self.create_subscription(LaserScan, '/scan', self.lidar_callback, qos_profile)
-        self.camera_subscription = self.create_subscription(CompressedImage, '/camera', self.camera_callback, 10)
+        self.subscription = self.create_subscription(LaserScan, '/scan1', self.lidar_callback, qos_profile)
+        self.camera_subscription = self.create_subscription(CompressedImage, '/camera1', self.camera_callback, 10)
         self.publish_timer = self.create_timer(0.1, self.ObjectDetectionPublisher)
         self.Objectpublisher = self.create_publisher(ObjectPose, '/detected_object', 10)
 

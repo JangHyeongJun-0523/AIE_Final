@@ -11,14 +11,21 @@
 #include "rcutils/allocator.h"
 
 
+// Include directives for member types
+// Member `robot_id`
+#include "rosidl_runtime_c/string_functions.h"
+
 bool
 robot_msgs__msg__GoalPose__init(robot_msgs__msg__GoalPose * msg)
 {
   if (!msg) {
     return false;
   }
-  // move_flag
-  // rotate_flag
+  // robot_id
+  if (!rosidl_runtime_c__String__init(&msg->robot_id)) {
+    robot_msgs__msg__GoalPose__fini(msg);
+    return false;
+  }
   // x
   // y
   // theta
@@ -31,8 +38,8 @@ robot_msgs__msg__GoalPose__fini(robot_msgs__msg__GoalPose * msg)
   if (!msg) {
     return;
   }
-  // move_flag
-  // rotate_flag
+  // robot_id
+  rosidl_runtime_c__String__fini(&msg->robot_id);
   // x
   // y
   // theta
@@ -44,12 +51,10 @@ robot_msgs__msg__GoalPose__are_equal(const robot_msgs__msg__GoalPose * lhs, cons
   if (!lhs || !rhs) {
     return false;
   }
-  // move_flag
-  if (lhs->move_flag != rhs->move_flag) {
-    return false;
-  }
-  // rotate_flag
-  if (lhs->rotate_flag != rhs->rotate_flag) {
+  // robot_id
+  if (!rosidl_runtime_c__String__are_equal(
+      &(lhs->robot_id), &(rhs->robot_id)))
+  {
     return false;
   }
   // x
@@ -75,10 +80,12 @@ robot_msgs__msg__GoalPose__copy(
   if (!input || !output) {
     return false;
   }
-  // move_flag
-  output->move_flag = input->move_flag;
-  // rotate_flag
-  output->rotate_flag = input->rotate_flag;
+  // robot_id
+  if (!rosidl_runtime_c__String__copy(
+      &(input->robot_id), &(output->robot_id)))
+  {
+    return false;
+  }
   // x
   output->x = input->x;
   // y

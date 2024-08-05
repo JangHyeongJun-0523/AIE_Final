@@ -55,7 +55,7 @@ class MoveManager(Node):
     def __init__(self, ac_server):
         super().__init__('move_manager')
 
-        self.amcl_subscriber = self.create_subscription(PoseWithCovarianceStamped, '/amcl_pose', self.amcl_pose_callback, 10)
+        self.amcl_subscriber = self.create_subscription(PoseWithCovarianceStamped, '/amcl_pose1', self.amcl_pose_callback, 10)
         self.object_subscriber = self.create_subscription(ObjectPose, '/detected_object', self.object_detection, 10)
 
         self.ac_server = ac_server
@@ -76,18 +76,19 @@ class MoveManager(Node):
         self.ac_server.object_labels = []
         self.ac_server.object_ranges = []
         self.ac_server.object_angles = []
-        self.ac_server.is_object = object_info.detected
-        self.ac_server.object_labels = object_info.labels
-        self.ac_server.object_ranges = object_info.ranges
-        self.ac_server.object_angles = object_info.angles
+        if object_info.detector_id == 'Mk.1':
+            self.ac_server.is_object = object_info.detected
+            self.ac_server.object_labels = object_info.labels
+            self.ac_server.object_ranges = object_info.ranges
+            self.ac_server.object_angles = object_info.angles
 
 class MoveActionServer(Node):
     def __init__(self):
         super().__init__('moving_action_node')
 
-        self.cmd_vel_publisher = self.create_publisher(Twist, '/base_controller/cmd_vel_unstamped', 10)
+        self.cmd_vel_publisher = self.create_publisher(Twist, '/base_controller/cmd_vel_unstamped1', 10)
 
-        self.action_server = ActionServer(self, MoveToGoal,'/moving_path', self.execute_callback)
+        self.action_server = ActionServer(self, MoveToGoal,'/robot1_moving_path', self.execute_callback)
 
         self.goal_x = 0.0  # 목표 위치의 x 좌표
         self.goal_y = 0.0  # 목표 위치의 y 좌표

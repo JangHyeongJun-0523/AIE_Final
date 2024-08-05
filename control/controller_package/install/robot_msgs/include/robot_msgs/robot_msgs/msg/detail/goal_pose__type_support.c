@@ -12,6 +12,10 @@
 #include "robot_msgs/msg/detail/goal_pose__struct.h"
 
 
+// Include directives for member types
+// Member `robot_id`
+#include "rosidl_runtime_c/string_functions.h"
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -31,33 +35,16 @@ void robot_msgs__msg__GoalPose__rosidl_typesupport_introspection_c__GoalPose_fin
   robot_msgs__msg__GoalPose__fini(message_memory);
 }
 
-static rosidl_typesupport_introspection_c__MessageMember robot_msgs__msg__GoalPose__rosidl_typesupport_introspection_c__GoalPose_message_member_array[5] = {
+static rosidl_typesupport_introspection_c__MessageMember robot_msgs__msg__GoalPose__rosidl_typesupport_introspection_c__GoalPose_message_member_array[4] = {
   {
-    "move_flag",  // name
-    rosidl_typesupport_introspection_c__ROS_TYPE_BOOLEAN,  // type
+    "robot_id",  // name
+    rosidl_typesupport_introspection_c__ROS_TYPE_STRING,  // type
     0,  // upper bound of string
     NULL,  // members of sub message
     false,  // is array
     0,  // array size
     false,  // is upper bound
-    offsetof(robot_msgs__msg__GoalPose, move_flag),  // bytes offset in struct
-    NULL,  // default value
-    NULL,  // size() function pointer
-    NULL,  // get_const(index) function pointer
-    NULL,  // get(index) function pointer
-    NULL,  // fetch(index, &value) function pointer
-    NULL,  // assign(index, value) function pointer
-    NULL  // resize(index) function pointer
-  },
-  {
-    "rotate_flag",  // name
-    rosidl_typesupport_introspection_c__ROS_TYPE_BOOLEAN,  // type
-    0,  // upper bound of string
-    NULL,  // members of sub message
-    false,  // is array
-    0,  // array size
-    false,  // is upper bound
-    offsetof(robot_msgs__msg__GoalPose, rotate_flag),  // bytes offset in struct
+    offsetof(robot_msgs__msg__GoalPose, robot_id),  // bytes offset in struct
     NULL,  // default value
     NULL,  // size() function pointer
     NULL,  // get_const(index) function pointer
@@ -122,7 +109,7 @@ static rosidl_typesupport_introspection_c__MessageMember robot_msgs__msg__GoalPo
 static const rosidl_typesupport_introspection_c__MessageMembers robot_msgs__msg__GoalPose__rosidl_typesupport_introspection_c__GoalPose_message_members = {
   "robot_msgs__msg",  // message namespace
   "GoalPose",  // message name
-  5,  // number of fields
+  4,  // number of fields
   sizeof(robot_msgs__msg__GoalPose),
   robot_msgs__msg__GoalPose__rosidl_typesupport_introspection_c__GoalPose_message_member_array,  // message members
   robot_msgs__msg__GoalPose__rosidl_typesupport_introspection_c__GoalPose_init_function,  // function to initialize message memory (memory has to be allocated)

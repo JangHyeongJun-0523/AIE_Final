@@ -69,32 +69,16 @@ private:
   ::robot_msgs::msg::GoalPose msg_;
 };
 
-class Init_GoalPose_rotate_flag
+class Init_GoalPose_robot_id
 {
 public:
-  explicit Init_GoalPose_rotate_flag(::robot_msgs::msg::GoalPose & msg)
-  : msg_(msg)
-  {}
-  Init_GoalPose_x rotate_flag(::robot_msgs::msg::GoalPose::_rotate_flag_type arg)
-  {
-    msg_.rotate_flag = std::move(arg);
-    return Init_GoalPose_x(msg_);
-  }
-
-private:
-  ::robot_msgs::msg::GoalPose msg_;
-};
-
-class Init_GoalPose_move_flag
-{
-public:
-  Init_GoalPose_move_flag()
+  Init_GoalPose_robot_id()
   : msg_(::rosidl_runtime_cpp::MessageInitialization::SKIP)
   {}
-  Init_GoalPose_rotate_flag move_flag(::robot_msgs::msg::GoalPose::_move_flag_type arg)
+  Init_GoalPose_x robot_id(::robot_msgs::msg::GoalPose::_robot_id_type arg)
   {
-    msg_.move_flag = std::move(arg);
-    return Init_GoalPose_rotate_flag(msg_);
+    msg_.robot_id = std::move(arg);
+    return Init_GoalPose_x(msg_);
   }
 
 private:
@@ -112,7 +96,7 @@ template<>
 inline
 auto build<::robot_msgs::msg::GoalPose>()
 {
-  return robot_msgs::msg::builder::Init_GoalPose_move_flag();
+  return robot_msgs::msg::builder::Init_GoalPose_robot_id();
 }
 
 }  // namespace robot_msgs

@@ -38,8 +38,7 @@ struct GoalPose_
     if (rosidl_runtime_cpp::MessageInitialization::ALL == _init ||
       rosidl_runtime_cpp::MessageInitialization::ZERO == _init)
     {
-      this->move_flag = false;
-      this->rotate_flag = false;
+      this->robot_id = "";
       this->x = 0.0;
       this->y = 0.0;
       this->theta = 0.0;
@@ -47,13 +46,12 @@ struct GoalPose_
   }
 
   explicit GoalPose_(const ContainerAllocator & _alloc, rosidl_runtime_cpp::MessageInitialization _init = rosidl_runtime_cpp::MessageInitialization::ALL)
+  : robot_id(_alloc)
   {
-    (void)_alloc;
     if (rosidl_runtime_cpp::MessageInitialization::ALL == _init ||
       rosidl_runtime_cpp::MessageInitialization::ZERO == _init)
     {
-      this->move_flag = false;
-      this->rotate_flag = false;
+      this->robot_id = "";
       this->x = 0.0;
       this->y = 0.0;
       this->theta = 0.0;
@@ -61,12 +59,9 @@ struct GoalPose_
   }
 
   // field types and members
-  using _move_flag_type =
-    bool;
-  _move_flag_type move_flag;
-  using _rotate_flag_type =
-    bool;
-  _rotate_flag_type rotate_flag;
+  using _robot_id_type =
+    std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<ContainerAllocator>::template rebind_alloc<char>>;
+  _robot_id_type robot_id;
   using _x_type =
     double;
   _x_type x;
@@ -78,16 +73,10 @@ struct GoalPose_
   _theta_type theta;
 
   // setters for named parameter idiom
-  Type & set__move_flag(
-    const bool & _arg)
+  Type & set__robot_id(
+    const std::basic_string<char, std::char_traits<char>, typename std::allocator_traits<ContainerAllocator>::template rebind_alloc<char>> & _arg)
   {
-    this->move_flag = _arg;
-    return *this;
-  }
-  Type & set__rotate_flag(
-    const bool & _arg)
-  {
-    this->rotate_flag = _arg;
+    this->robot_id = _arg;
     return *this;
   }
   Type & set__x(
@@ -151,10 +140,7 @@ struct GoalPose_
   // comparison operators
   bool operator==(const GoalPose_ & other) const
   {
-    if (this->move_flag != other.move_flag) {
-      return false;
-    }
-    if (this->rotate_flag != other.rotate_flag) {
+    if (this->robot_id != other.robot_id) {
       return false;
     }
     if (this->x != other.x) {

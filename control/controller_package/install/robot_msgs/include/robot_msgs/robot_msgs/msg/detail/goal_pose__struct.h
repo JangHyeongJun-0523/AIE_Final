@@ -17,11 +17,14 @@ extern "C"
 
 // Constants defined in the message
 
+// Include directives for member types
+// Member 'robot_id'
+#include "rosidl_runtime_c/string.h"
+
 /// Struct defined in msg/GoalPose in the package robot_msgs.
 typedef struct robot_msgs__msg__GoalPose
 {
-  bool move_flag;
-  bool rotate_flag;
+  rosidl_runtime_c__String robot_id;
   double x;
   double y;
   double theta;
