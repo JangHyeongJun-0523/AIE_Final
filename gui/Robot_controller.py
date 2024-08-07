@@ -1,6 +1,6 @@
 import sys
-from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
 from PyQt5 import uic
 from PyQt5.QtCore import *
 from PyQt5.QtCore import Qt, QTimer
@@ -15,8 +15,10 @@ from robot_msgs.msg import GoalPose
 from robot_msgs.msg import RobotStatus
 from threading import Thread
 
+import mysql.connector
+
 shelf_IPs = {
-    "shelf1":'192.168.1.101',
+    "shelf1":'192.168.1.100',
 }
 
 positions = {
@@ -138,18 +140,52 @@ class WindowClass(QMainWindow, from_class) :
         self.shelf1_connected = False
         self.shelf1_connect()
 
-        self.timer = QTimer(self)
-        self.timer.start(1000)
-        #self.timer.timeout.connect(self.timeout)
-
         self.format = Struct('@iii')
 
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_shelf)
-        self.timer.start(100)
-
+        self.timer.start(1000)
+ 
         self.current_pose = None
+
+        self.connect_to_database()
+        self.show_table()
+    
+    def connect_to_database(self):
+        global connection, cursor
+        try:
+            connection = mysql.connector.connect(
+            host='127.0.0.1',
+            database='task_database',
+            user='root',
+            password='rlatp0923'
+            )
+            if connection.is_connected():
+                cursor = connection.cursor()
+                return connection
+            
+        except error as e:
+            print(f"Error: {e}")
+
+    def show_table(self):
+        query = """
+        SELECT * FROM task_table;
+        """
+        cursor.execute(query)
+        columns = cursor.column_names
+        results = cursor.fetchall()
+        
+        if results:
+            self.display_table_data(self.tableWidget, columns, results)
+
+    def display_table_data(self, table, columns, results):
+        table.setRowCount(len(results))
+        table.setColumnCount(len(columns))
+        table.setHorizontalHeaderLabels(columns)
+        for row_idx, row_data in enumerate(results):
+            for col_idx, col_data in enumerate(row_data):
+                table.setItem(row_idx, col_idx, QTableWidgetItem(str(col_data)))
 
     def select_robot(self, robot_id):
         self.selected_robot = robot_id

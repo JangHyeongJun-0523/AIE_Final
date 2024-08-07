@@ -25,15 +25,15 @@ class ObjectDetector(Node):
         self.subscription2 = self.create_subscription(LaserScan, '/scan2', self.lidar_callback2, qos_profile)
         self.camera_subscription2 = self.create_subscription(CompressedImage, '/camera2', self.camera_callback2, 10)
 
-        self.publish_timer = self.create_timer(0.1, self.ObjectDetectionPublisher)
-        self.publish_timer = self.create_timer(0.1, self.ObjectDetectionPublisher2)
+        self.publish_timer = self.create_timer(0.2, self.ObjectDetectionPublisher)
+        # self.publish_timer = self.create_timer(0.1, self.ObjectDetectionPublisher2)
         self.Objectpublisher = self.create_publisher(ObjectPose, '/detected_object', 10)
 
 
         self.detector_id = 1
         self.detector_id2 = 2
         
-        self.model = YOLO('./control/controller_package/src/final_project_package/model/detector.pt')
+        self.model = YOLO('/home/aa/dev_ws/ros-repo-1/control/controller_package/src/final_project_package/model/detector.pt')
         self.conf = 0.3
 
         self.image_center_x = 160
@@ -211,21 +211,17 @@ class ObjectDetector(Node):
                 print(angle_list)
 
                 Object = ObjectPose()
-                Object.detector_id = self.detector_id
+                Object.detector_id = self.detector_id2
                 Object.detected = False
                 Object.labels = class_list
                 Object.ranges = distance_list
                 Object.angles = angle_list
                 self.Objectpublisher.publish(Object)
-            
 
-            
-            
-
-        cv2.imshow('lidar projection', cv_image)
+        cv2.imshow('lidar projection2', cv_image)
         cv2.waitKey(1)
 
-        def ObjectDetectionPublisher(self):
+    def ObjectDetectionPublisher(self):
         cv_image = self.image
 
         if len(self.lidar_points):
@@ -289,7 +285,7 @@ class ObjectDetector(Node):
                 print(angle_list)
 
                 Object = ObjectPose()
-                Object.detector_id = self.detector_id2
+                Object.detector_id = self.detector_id
                 Object.detected = True
                 Object.labels = class_list
                 Object.ranges = distance_list
@@ -306,18 +302,14 @@ class ObjectDetector(Node):
                 print(angle_list)
 
                 Object = ObjectPose()
-                Object.detector_id = self.detector_id2
+                Object.detector_id = self.detector_id
                 Object.detected = False
                 Object.labels = class_list
                 Object.ranges = distance_list
                 Object.angles = angle_list
                 self.Objectpublisher.publish(Object)
-            
 
-            
-            
-
-        cv2.imshow('lidar projection2', cv_image)
+        cv2.imshow('lidar projection', cv_image)
         cv2.waitKey(1)
         
         

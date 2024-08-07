@@ -11,6 +11,7 @@ import tf_transformations
 from math import sqrt, atan2, pi
 
 from robot_msgs.action import MoveToGoal
+
 class PID:
     def __init__(self, P, I, D, max_state, min_state, dt):
         self.P = P
@@ -72,15 +73,15 @@ class MoveManager(Node):
         return euler
     
     def object_detection(self, object_info):
-        self.ac_server.is_object = False
-        self.ac_server.object_labels = []
-        self.ac_server.object_ranges = []
-        self.ac_server.object_angles = []
-        if object_info.detector_id == 'Mk.1':
-            self.ac_server.is_object = object_info.detected
-            self.ac_server.object_labels = object_info.labels
-            self.ac_server.object_ranges = object_info.ranges
-            self.ac_server.object_angles = object_info.angles
+        self.ac_server.tmp_is_object = False
+        self.ac_server.tmp_object_labels = []
+        self.ac_server.tmp_object_ranges = []
+        self.ac_server.tmp_object_angles = []
+        if object_info.detector_id == 1:
+            self.ac_server.tmp_is_object = object_info.detected
+            self.ac_server.tmp_object_labels = object_info.labels
+            self.ac_server.tmp_object_ranges = object_info.ranges
+            self.ac_server.tmp_object_angles = object_info.angles
 
 class MoveActionServer(Node):
     def __init__(self):
@@ -97,6 +98,12 @@ class MoveActionServer(Node):
 
         self.position = {'x': 0.0, 'y': 0.0, 'theta': 0.0}
 
+        self.tmp_is_object = False
+        self.tmp_object_labels = []
+        self.tmp_object_ranges = []
+        self.tmp_object_angles = []
+
+
         self.is_object = False
         self.object_labels = []
         self.object_ranges = []
@@ -111,7 +118,7 @@ class MoveActionServer(Node):
         goal_data = goal_handle.request
         print(len(goal_data.x))
 
-        self.pid_linear = PID(P=1.0, I=0, D=0.0003, max_state=1.0, min_state=-1.0, dt=0.1)
+        self.pid_linear = PID(P=1.0, I=0, D=0.00, max_state=1.0, min_state=-1.0, dt=0.1)
         self.pid_angular = PID(P=2.0, I=0., D=0.0, max_state=1.0, min_state=-1.0, dt=0.1)
 
         if goal_handle.request.x and goal_handle.request.y and goal_handle.request.theta:
@@ -125,15 +132,15 @@ class MoveActionServer(Node):
 
                 angle_error = 1000
                 while abs(angle_error) > 0.3:
-                    ranges = []
-                    if self.object_ranges:
-                        ranges = self.object_ranges
-                    if not ranges:
+                    if len(self.tmp_object_ranges):
+                        self.object_ranges = self.tmp_object_ranges
+                    if not len(self.object_ranges):
                         print('range is none')
-                    if ranges:
-                        print(ranges)
+                        
+                    if len(self.object_ranges):
+                        print(self.object_ranges)
 
-                        if min(ranges) < 0.8:
+                        if min(self.object_ranges) < 0.8:
                             print('prevent obstacle')
                             self.status = 'pause'
                             twist = Twist()
@@ -177,16 +184,15 @@ class MoveActionServer(Node):
                 self.pid_angular.inegral_and_time_reset()
 
                 while distance > 0.1:
-                    ranges = []
-                    if self.object_ranges:
-                        ranges = self.object_ranges
-                    if not ranges:
+                    if len(self.tmp_object_ranges):
+                        self.object_ranges = self.tmp_object_ranges
+                    if not len(self.object_ranges):
                         print('range is none')
+                        
+                    if len(self.object_ranges):
+                        print(self.object_ranges)
 
-                    if ranges:
-                        print(ranges)
-
-                        if min(ranges) < 0.8:
+                        if min(self.object_ranges) < 0.8:
                             print('prevent obstacle')
                             self.status = 'pause'
                             twist = Twist()
@@ -228,7 +234,7 @@ class MoveActionServer(Node):
 
         goal_handle.succeed()
         result = MoveToGoal.Result()
-        result.result_status = 'succeeded!!'
+        result.result_status = 'done'
         result.x = self.position['x']
         result.y = self.position['y']
         result.theta = self.position['theta']

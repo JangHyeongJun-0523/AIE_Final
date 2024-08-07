@@ -228,7 +228,7 @@ class MoveActionServer(Node):
 
         goal_handle.succeed()
         result = MoveToGoal.Result()
-        result.result_status = 'succeeded!!'
+        result.result_status = 'done'
         result.x = self.position['x']
         result.y = self.position['y']
         result.theta = self.position['theta']
