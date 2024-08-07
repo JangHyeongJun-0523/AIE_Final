@@ -14,19 +14,30 @@ class OrderMove(Node):
         super().__init__('moving_order_node')
         
         self.goal_subscriber = self.create_subscription(GoalPose, '/set_goal', self.path_generator, 10)
-        self.amcl_subscriber = self.create_subscription(PoseWithCovarianceStamped, '/amcl_pose1', self.amcl_callback1, 10)
+
+        self.robot1_amcl_subscriber = self.create_subscription(PoseWithCovarianceStamped, '/amcl_pose1', self.amcl_callback1, 10)
         self.robot1_status_publisher = self.create_publisher(RobotStatus, '/robot1_status', 10)
         self.robot1_action_client = ActionClient(self, MoveToGoal, '/robot1_moving_path')
+
+        self.robot2_amcl_subscriber = self.create_subscription(PoseWithCovarianceStamped, '/amcl_pose2', self.amcl_callback2, 10)
+        self.robot2_status_publisher = self.create_publisher(RobotStatus, '/robot2_status', 10)
+        self.robot2_action_client = ActionClient(self, MoveToGoal, '/robot2_moving_path')
 
         self.robot1_position = {'x': 0.0, 'y': 0.0, 'theta': 0.0}
         self.robot2_position = {'x': 0.0, 'y': 0.0, 'theta': 0.0}
         self.robot3_position = {'x': 0.0, 'y': 0.0, 'theta': 0.0}
+
+        
     
     def amcl_callback1(self, msg):
         self.robot1_position['x'] = msg.pose.pose.position.x
         self.robot1_position['y'] = msg.pose.pose.position.y
         _, _, self.robot1_position['theta'] = self.get_euler_from_quaternion(msg.pose.pose.orientation)
-        print(self.robot1_position['x'], self.robot1_position['y'], self.robot1_position['theta'])
+    
+    def amcl_callback2(self, msg):
+        self.robot2_position['x'] = msg.pose.pose.position.x
+        self.robot2_position['y'] = msg.pose.pose.position.y
+        _, _, self.robot2_position['theta'] = self.get_euler_from_quaternion(msg.pose.pose.orientation)
 
     def get_euler_from_quaternion(self, quaternion):
         euler = tf_transformations.euler_from_quaternion([quaternion.x, quaternion.y, quaternion.z, quaternion.w])
@@ -81,7 +92,10 @@ class OrderMove(Node):
 
             self.send_goal_future.add_done_callback(self.robot1_goal_response_callback)
         elif robot_id == 'Mk.2':
-            pass
+            self.robot2_action_client.wait_for_server()
+            self.send_goal_future = self.robot2_action_client.send_goal_async(goal_msg, self.robot2_feedback_callback)
+
+            self.send_goal_future.add_done_callback(self.robot2_goal_response_callback)
         elif robot_id == 'Mk.3':
             pass
         else:
@@ -114,6 +128,38 @@ class OrderMove(Node):
 
         msg = RobotStatus()
         msg.robot_id = 'Mk.1'
+        msg.status = feedback.feedback_status
+        self.robot1_status_publisher.publish(msg)
+
+        self.get_logger().info('Received feedback: {0}'.format(feedback.feedback_status))
+    
+    def robot2_goal_response_callback(self, future):
+        goal_handle = future.result()
+        if not goal_handle.accepted:
+            self.get_logger().info('Goal rejected')
+            return
+        
+        self.get_logger().info('Goal accepted')
+
+        self.get_result_future = goal_handle.get_result_async()
+        self.get_result_future.add_done_callback(self.robot2_get_result_callback)
+
+    def robot2_get_result_callback(self, future):
+        result = future.result().result
+
+        msg = RobotStatus()
+        msg.robot_id = 'Mk.2'
+        msg.status = result.result_status
+        self.robot2_status_publisher.publish(msg)
+
+        print(result.result_status, result.x, result.y, result.theta)
+        self.get_logger().info('Result: {0}'.format(result.result_status))
+    
+    def robot2_feedback_callback(self, feedback_msg):
+        feedback = feedback_msg.feedback
+
+        msg = RobotStatus()
+        msg.robot_id = 'Mk.2'
         msg.status = feedback.feedback_status
         self.robot1_status_publisher.publish(msg)
 

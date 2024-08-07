@@ -746,7 +746,7 @@
      </widget>
      <widget class="QLineEdit" name="robot1_id">
       <property name="text">
-       <string/>
+       <string>Mk.1</string>
       </property>
      </widget>
      <widget class="QLabel" name="r_status1">
@@ -756,7 +756,7 @@
      </widget>
      <widget class="QLineEdit" name="robot1_status">
       <property name="text">
-       <string/>
+       <string>move</string>
       </property>
      </widget>
      <widget class="QPushButton" name="select1_button">
@@ -779,7 +779,7 @@
      </widget>
      <widget class="QLineEdit" name="robot2_id">
       <property name="text">
-       <string/>
+       <string>Mk.2</string>
       </property>
      </widget>
      <widget class="QLabel" name="r_status2">
@@ -789,7 +789,7 @@
      </widget>
      <widget class="QLineEdit" name="robot2_status">
       <property name="text">
-       <string/>
+       <string>pause</string>
       </property>
      </widget>
      <widget class="QPushButton" name="select2_button">
@@ -809,7 +809,7 @@
      </widget>
      <widget class="QLineEdit" name="robot3_id">
       <property name="text">
-       <string/>
+       <string>Mk.3</string>
       </property>
      </widget>
      <widget class="QLabel" name="r_status3">
@@ -819,7 +819,7 @@
      </widget>
      <widget class="QLineEdit" name="robot3_status">
       <property name="text">
-       <string/>
+       <string>wait</string>
       </property>
      </widget>
      <widget class="QPushButton" name="select3_button">

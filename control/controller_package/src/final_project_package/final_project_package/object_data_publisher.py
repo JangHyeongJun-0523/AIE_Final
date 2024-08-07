@@ -21,10 +21,17 @@ class ObjectDetector(Node):
 
         self.subscription = self.create_subscription(LaserScan, '/scan1', self.lidar_callback, qos_profile)
         self.camera_subscription = self.create_subscription(CompressedImage, '/camera1', self.camera_callback, 10)
+
+        self.subscription2 = self.create_subscription(LaserScan, '/scan2', self.lidar_callback2, qos_profile)
+        self.camera_subscription2 = self.create_subscription(CompressedImage, '/camera2', self.camera_callback2, 10)
+
         self.publish_timer = self.create_timer(0.1, self.ObjectDetectionPublisher)
+        self.publish_timer = self.create_timer(0.1, self.ObjectDetectionPublisher2)
         self.Objectpublisher = self.create_publisher(ObjectPose, '/detected_object', 10)
 
+
         self.detector_id = 1
+        self.detector_id2 = 2
         
         self.model = YOLO('/home/aa/dev_ws/ros-repo-1/control/controller_package/src/final_project_package/model/detector.pt')
         self.conf = 0.3
@@ -34,9 +41,14 @@ class ObjectDetector(Node):
         self.image = np.zeros((240, 320, 3), dtype = np.uint8)
         self.video_width = 320
         self.video_height = 240
-        self.imaige = np.zeros((self.video_height, self.video_width, 3), np.uint8)
+        self.image = np.zeros((self.video_height, self.video_width, 3), np.uint8)
+
+        self.image2 = np.zeros((self.video_height, self.video_width, 3), np.uint8)
+        self.video_width2 = 320
+        self.video_height2 = 240
 
         self.lidar_points = np.array([])
+        self.lidar_points2 = np.array([])
 
         self.T_lidar_to_camera = np.array([
             [0, -1, 0, 0],
@@ -64,6 +76,13 @@ class ObjectDetector(Node):
         self.video_height = self.image.shape[0]
         self.video_width = self.image.shape[1]
         #print(self.image.shape)
+    
+    def camera_callback2(self, data):
+        np_arr = np.frombuffer(data.data, np.uint8)
+        self.image2 = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+        self.video_height2 = self.image.shape[0]
+        self.video_width2 = self.image.shape[1]
+        #print(self.image.shape)
 
     
     def lidar_callback(self, msg):
@@ -87,9 +106,126 @@ class ObjectDetector(Node):
         z = np.zeros_like(x)
 
         self.lidar_points = np.vstack((x, y, z, np.ones_like(x)))
+
+    def lidar_callback2(self, msg):
+        self.last_lidar2 = msg
+        angle_min = self.last_lidar2.angle_min
+        angle_max = self.last_lidar2.angle_max
+        angle_increment = self.last_lidar2.angle_increment
+
+        self.ranges2 = np.array(self.last_lidar2.ranges)
+        self.angles2 = np.arange(angle_min, angle_max, (angle_max - angle_min)/len(self.ranges2))
+
+        self.ranges2 = self.ranges2[70:210]
+        self.angles2 = self.angles2[70:210]
+
+        validator = self.ranges2 > 0.1
+        self.angles2 = self.angles2[validator]
+        self.ranges2 = self.ranges2[validator]
+
+        x = self.ranges2*np.cos(self.angles2)
+        y = self.ranges2*np.sin(self.angles2)
+        z = np.zeros_like(x)
+
+        self.lidar_points2 = np.vstack((x, y, z, np.ones_like(x)))
         
 
-    def ObjectDetectionPublisher(self):
+    def ObjectDetectionPublisher2(self):
+        cv_image = self.image2
+
+        if len(self.lidar_points2):
+            lidar_points_camera = self.T_lidar_to_camera @ self.lidar_points2
+
+            points_2d, _ = cv2.projectPoints(lidar_points_camera[:3, :].T, np.zeros((3,1), dtype=np.float64), np.zeros((3,1), dtype=np.float64), self.camera_matrix, self.dist_coeffs)
+
+            results = self.model(self.image2, conf=self.conf)
+
+            class_list = []
+            distance_list = []
+            angle_list = []
+
+            start_point = 0
+            end_point = self.video_width2
+
+            if len(results[0]):
+                print(len(results[0]))
+                for result in results[0].boxes:
+                    try:
+                        cls = int(result.cls[0])
+                        label = "robot" if cls == 0 else "laborer"
+
+                        x1, y1, x2, y2 = map(int, result.xyxy[0])
+
+                        start_point = x1
+                        end_point = x2
+
+                        distances = [abs(point[0][0] - start_point) for point in points_2d]
+                        start_point_index = np.argmin(distances)
+                        distances = [abs(point[0][0] - end_point) for point in points_2d]
+                        end_point_index = np.argmin(distances)
+                        closest_index = np.argmin(self.ranges[min(start_point_index, end_point_index):max(start_point_index, end_point_index)])+min(start_point_index, end_point_index)
+                        closest_distance = float(self.ranges[closest_index])
+                        closest_angle = float(self.angles[closest_index])
+
+                        class_list.append(label)
+                        distance_list.append(closest_distance)
+                        angle_list.append(closest_angle)
+
+                        cv2.rectangle(self.image2, (x1, y1), (x2, y2), (255, 0, 0), 1)
+                        cv2.putText(self.image2, label, (x1, y1-5), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 0, 0), 1)
+                    
+                    except:
+                        print("ERROR!!!!!!!!!!!!!!!!!!")
+                        continue
+                
+            for i, point in enumerate(points_2d):
+                x, y = int(point[0][0]), int(point[0][1])
+                if 0 <= x < cv_image.shape[1] and 0 <= y < cv_image.shape[0]:
+                    cv2.circle(cv_image, (x, y), 3, (0, 255, 0), -1)
+
+
+            if len(class_list):
+                class_list.append('dummy')
+                distance_list.append(10000.)
+                angle_list.append(10000.)
+
+                print(class_list)
+                print(distance_list)
+                print(angle_list)
+
+                Object = ObjectPose()
+                Object.detector_id = self.detector_id2
+                Object.detected = True
+                Object.labels = class_list
+                Object.ranges = distance_list
+                Object.angles = angle_list
+                self.Objectpublisher.publish(Object)
+            
+            else:
+                class_list.append('dummy')
+                distance_list.append(10000.)
+                angle_list.append(10000.)
+
+                print(class_list)
+                print(distance_list)
+                print(angle_list)
+
+                Object = ObjectPose()
+                Object.detector_id = self.detector_id
+                Object.detected = False
+                Object.labels = class_list
+                Object.ranges = distance_list
+                Object.angles = angle_list
+                self.Objectpublisher.publish(Object)
+            
+
+            
+            
+
+        cv2.imshow('lidar projection', cv_image)
+        cv2.waitKey(1)
+
+        def ObjectDetectionPublisher(self):
         cv_image = self.image
 
         if len(self.lidar_points):
@@ -153,7 +289,7 @@ class ObjectDetector(Node):
                 print(angle_list)
 
                 Object = ObjectPose()
-                Object.detector_id = self.detector_id
+                Object.detector_id = self.detector_id2
                 Object.detected = True
                 Object.labels = class_list
                 Object.ranges = distance_list
@@ -170,7 +306,7 @@ class ObjectDetector(Node):
                 print(angle_list)
 
                 Object = ObjectPose()
-                Object.detector_id = self.detector_id
+                Object.detector_id = self.detector_id2
                 Object.detected = False
                 Object.labels = class_list
                 Object.ranges = distance_list
@@ -181,8 +317,9 @@ class ObjectDetector(Node):
             
             
 
-        cv2.imshow('lidar projection', cv_image)
+        cv2.imshow('lidar projection2', cv_image)
         cv2.waitKey(1)
+        
         
         
 def main(args=None):

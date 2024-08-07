@@ -21,7 +21,8 @@ setup(
     entry_points={
         'console_scripts': [
             'robot_controller = robot_controller.robot_controller:main',
-            'action_robot_controller = robot_controller.robot_controller_action:main'
+            'action_robot1_controller = robot_controller.robot1_controller_action:main',
+            'action_robot2_controller = robot_controller.robot2_controller_action:main'
         ],
     },
 )
