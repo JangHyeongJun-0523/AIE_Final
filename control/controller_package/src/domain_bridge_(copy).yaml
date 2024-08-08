@@ -1,0 +1,57 @@
+topics:
+  amcl_pose:
+    type: geometry_msgs/msg/PoseWithCovarianceStamped
+    from_domain: 83
+    to_domain: 141
+    remap: amcl_pose1
+
+  amcl_pose:
+    type: geometry_msgs/msg/PoseWithCovarianceStamped
+    from_domain: 9
+    to_domain: 141
+    remap: amcl_pose2
+  
+    
+  scan:
+    type: sensor_msgs/msg/LaserScan
+    from_domain: 83
+    to_domain: 141
+    remap: scan1
+
+  scan:
+    type: sensor_msgs/msg/LaserScan
+    from_domain: 9
+    to_domain: 141
+    remap: scan2
+    
+
+    
+  camera:
+    type: sensor_msgs/msg/CompressedImage
+    from_domain: 83
+    to_domain: 141
+    remap: camera1
+
+  camera:
+    type: sensor_msgs/msg/CompressedImage
+    from_domain: 9
+    to_domain: 141
+    remap: camera2
+    
+
+
+  base_controller/cmd_vel_unstamped1:
+    type: geometry_msgs/msg/Twist
+    from_domain: 141
+    to_domain: 83
+    remap: base_controller/cmd_vel_unstamped
+  
+  base_controller/cmd_vel_unstamped2:
+    type: geometry_msgs/msg/Twist
+    from_domain: 141
+    to_domain: 9
+    remap: base_controller/cmd_vel_unstamped
+    
+
+    
+    
